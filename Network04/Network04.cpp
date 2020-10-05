@@ -5,7 +5,7 @@ using namespace std;
 bool GetDomainName(char *name, SOCKADDR *addr = NULL) {
 	SOCKADDR_IN6 sockAddr6 = addr?*(SOCKADDR_IN6*)addr:SOCKADDR_IN6();
 	SOCKADDR_IN sockAddr = addr ? *(SOCKADDR_IN*)addr : SOCKADDR_IN();
-	CHAR szBuffer1[512], szBuffer2[512];
+	CHAR szBuffer1[512], szBuffer2[512]; //도메인 max 256
 	ZeroMemory(szBuffer1, sizeof(szBuffer1));
 	ZeroMemory(szBuffer2, sizeof(szBuffer2));
 	/* IP 주소를 도메인으로 변환합니다. IP 주소를 담고 있는 sockaddr_in * 구조체, 도메인이 반환될 char * 배열, 서비스가 반환될 char * 배열이 사용됩니다. */
@@ -20,7 +20,7 @@ bool GetDomainName(char *name, SOCKADDR *addr = NULL) {
 			sockAddr6.sin6_family = AF_INET6;
 			inet_pton(AF_INET6, name, &addr6_str);
 			memcpy(&sockAddr6.sin6_addr.u, (IN6_ADDR*)addr6_str, sizeof(IN6_ADDR));
-			sockAddr6.sin6_port = htons(443);
+			sockAddr6.sin6_port = htons(433);
 			sock = (SOCKADDR *)&sockAddr6;
 			sockSize = sizeof(SOCKADDR_IN6);
 
