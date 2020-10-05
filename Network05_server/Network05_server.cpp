@@ -1,15 +1,9 @@
-﻿// 헤더 파일 추가
-#include <stdlib.h>
+﻿#include <stdlib.h>
 #include <stdio.h>
 #include <WinSock2.h>
 
-// 버퍼 크기 정의
 #define BUFSIZE 4096
-
-// 경고 제어
 #pragma warning(disable:4996)
-
-// 윈속 사용을 위한 라이브러리 링킹
 #pragma comment(lib, "Ws2_32.lib")
 
 // 데이터 수신 함수
@@ -43,7 +37,7 @@ int dataReceive(SOCKET s, char* buf, int len, int flags) {
 int main(int argc, char *argv[]) {
 
 	// 데이터 크기를 담을 변수
-	int retval;
+	int retval = 1;
 
 	// 윈속 객체 선언 및 초기화
 	WSADATA wsa;
@@ -88,7 +82,7 @@ int main(int argc, char *argv[]) {
 		printf("받을 파일 이름 : %s\n", filename);
 
 		// 파일 크기 받기
-		int totalbytes;
+		int totalbytes, remainBytes;
 		dataReceive(client_sock, (char *)&totalbytes, sizeof(totalbytes), 0);
 		buf = new char[totalbytes];
 		printf("받을 파일 크기 : %d 바이트\n", totalbytes);
@@ -98,20 +92,17 @@ int main(int argc, char *argv[]) {
 
 		// 파일 데이터 받기
 		int numtotal = 0;
-		while (1) {
-			retval = dataReceive(client_sock, buf, totalbytes, 0);
+		while (retval != 0) {
+			remainBytes = totalbytes - BUFSIZE;
+			int bufSize = BUFSIZE;
+			if (remainBytes < 0)
+				bufSize = remainBytes;
+			retval = dataReceive(client_sock, buf, bufSize, 0);
 
-			// 더 받을 데이터가 없을 때
-			if (retval == 0) {
-				break;
-			}
+			fwrite(buf, 1, retval, fp);
 
-			else {
-				fwrite(buf, 1, retval, fp);
-
-				// 받은 데이터 크기만큼 변수에 더해줌
-				numtotal += retval;
-			}
+			// 받은 데이터 크기만큼 변수에 더해줌
+			numtotal += retval;
 		}
 
 		fclose(fp);
