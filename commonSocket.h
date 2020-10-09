@@ -61,7 +61,7 @@ SOCKET CreateSocket(ULONG addr = htonl(INADDR_ANY)) {
 	return s;
 }
 
-void PrintPercent(float current, float total, float bufSize) {
+void PrintPercent(float current, float total, int bufSize) {
 	printf("\r%.1f ÆÛ¼¾Æ® \t bufsize: %d", (current / (float)total * 100), bufSize);
 }
 

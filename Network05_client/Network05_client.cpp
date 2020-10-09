@@ -19,8 +19,8 @@ void main(int argc, char *argv[]) {
 		int bufSize = BUFSIZE;		// 기본 4096만큼 보내기
 		if (remain - BUFSIZE < 0)	// 남아있는 버퍼가 적으면
 			bufSize = remain;		// 남아있는 만큼만 보내기
-
 		send(sock, buf, bufSize, 0);
+
 		buf += bufSize;
 		sendbytes += bufSize;
 		PrintPercent(sendbytes, totalbytes, bufSize);
