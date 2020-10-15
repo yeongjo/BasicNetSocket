@@ -61,13 +61,38 @@ SOCKET CreateSocket(ULONG addr = htonl(INADDR_ANY)) {
 	return s;
 }
 
+CRITICAL_SECTION cs;
+
+void PrintAtLine(short line, const char* chr, ...) {
+	EnterCriticalSection(&cs);
+	va_list ap;
+	char buf[128];
+	va_start(ap, chr);
+	vsprintf(buf, chr, ap);
+	va_end(ap);
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), { 0, line });
+	fprintf(stdout, "%d: ", line);
+	fprintf(stdout, "%s", buf);
+	LeaveCriticalSection(&cs);
+}
+
 void PrintPercent(float current, float total, int bufSize) {
 	printf("\r%.1f 퍼센트 \t bufsize: %d", (current / (float)total * 100), bufSize);
 }
 
-SOCKET AccpetClient(SOCKET listen_sock) {
+void PrintPercent(float current, float total, int bufSize, int line) {
+	PrintAtLine(line, "%.1f 퍼센트 \t bufsize: %d", (current / (float)total * 100), bufSize);
+}
+
+
+
+SOCKET AccpetClient(SOCKET listen_sock, int printLine = -1) {
 	SOCKADDR_IN clientaddr; int addrlen = sizeof(clientaddr);
 	SOCKET client_sock = accept(listen_sock, (SOCKADDR *)&clientaddr, &addrlen);
-	printf("클라이언트 접속 : IP = %s, Port = %d\n", inet_ntoa(clientaddr.sin_addr), ntohs(clientaddr.sin_port));
+
+	if(printLine == -1)
+		printf("클라이언트 접속 : IP = %s, Port = %d\n", inet_ntoa(clientaddr.sin_addr), ntohs(clientaddr.sin_port));
+	else
+		PrintAtLine(printLine, "클라이언트 접속 : IP = %s, Port = %d", inet_ntoa(clientaddr.sin_addr), ntohs(clientaddr.sin_port));
 	return client_sock;
 }
