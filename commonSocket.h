@@ -49,12 +49,15 @@ SOCKET CreateSocket(ULONG addr = htonl(INADDR_ANY)) {
 	servaddr.sin_port = htons(9000);
 	servaddr.sin_addr.s_addr = addr;
 
+	// TCP : SOCK_STREAM
+	// UDP : SOCK_DGRAM
 	auto s = socket(AF_INET, SOCK_STREAM, 0);
 	if (addr == htonl(INADDR_ANY)) {
-		bind(s, (SOCKADDR *)&servaddr, sizeof(servaddr));
+		bind(s, (SOCKADDR *)&servaddr, sizeof(servaddr)); // 접속을 기다리는 소켓
+		printf("서버 생성 : IP = %s, Port = %d\n", inet_ntoa(servaddr.sin_addr), ntohs(servaddr.sin_port));
 		listen(s, SOMAXCONN);
 	} else {
-		connect(s, (SOCKADDR *)&servaddr, sizeof(servaddr));
+		connect(s, (SOCKADDR *)&servaddr, sizeof(servaddr)); // bind 함수의 역할도 함께 수행
 		printf("서버 접속 : IP = %s, Port = %d\n", inet_ntoa(servaddr.sin_addr), ntohs(servaddr.sin_port));
 	}
 
@@ -95,4 +98,28 @@ SOCKET AccpetClient(SOCKET listen_sock, int printLine = -1) {
 	else
 		PrintAtLine(printLine, "클라이언트 접속 : IP = %s, Port = %d", inet_ntoa(clientaddr.sin_addr), ntohs(clientaddr.sin_port));
 	return client_sock;
+
+}
+
+#pragma comment(lib, "comctl32.lib")
+
+#pragma comment(linker,"\"/manifestdependency:type='win32' \
+name='Microsoft.Windows.Common-Controls' version='6.0.0.0' \
+processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
+
+#define ID_DEFAULTPROGRESSCTRL	401
+#define ID_SMOOTHPROGRESSCTRL	402
+#define ID_VERTICALPROGRESSCTRL	403
+
+LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+	switch (uMsg) {
+	case WM_DESTROY:
+		::PostQuitMessage(0);
+		break;
+
+	default:
+		return ::DefWindowProc(hWnd, uMsg, wParam, lParam);
+	}
+
+	return 0;
 }

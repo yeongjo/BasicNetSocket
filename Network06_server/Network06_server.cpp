@@ -46,7 +46,7 @@ DWORD ReceiveClientFile(LPVOID arg) {
 void main(int argc, char *argv[]) {
 	SOCKET listenSock = CreateSocket();
 	InitializeCriticalSection(&cs);
-	for (size_t i = 0; i <= 1024; i++) {
+	for (size_t i = 0;; i++) {
 		auto sockAndLine = new SocketAndLine{ AccpetClient(listenSock, i*6), i*6};
 		auto thread = CreateThread(0, 0, ReceiveClientFile, (LPVOID)sockAndLine, 0, 0);
 		if (thread == NULL) closesocket(sockAndLine->sock);
