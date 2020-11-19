@@ -15,7 +15,7 @@ void main(int argc, char *argv[]) {
 	fread(buf, 1, totalbytes, fp);
 	int sendbytes = 0;
 
-	for (int remain = totalbytes; 0 < remain; remain = remain - BUFSIZE) {
+	for (int remain = totalbytes; 0 < remain; remain -= BUFSIZE) {
 		int bufSize = BUFSIZE;		// 기본 4096만큼 보내기
 		if (remain - BUFSIZE < 0)	// 남아있는 버퍼가 적으면
 			bufSize = remain;		// 남아있는 만큼만 보내기
